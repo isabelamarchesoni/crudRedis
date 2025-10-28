@@ -1,0 +1,28 @@
+/* Estilos personalizados para a to-do list */
+body {
+    background-color: #f8f9fa; /* Fundo neutro */
+    font-family: Arial, sans-serif;
+}
+
+#task-list .card {
+    margin-bottom: 1rem;
+    transition: transform 0.2s; /* Animação suave ao hover */
+}
+
+#task-list .card:hover {
+    transform: scale(1.02);
+}
+
+/* Cores para status */
+.status-pendente { border-left: 5px solid #dc3545; } /* Vermelho */
+.status-em-progresso { border-left: 5px solid #ffc107; } /* Amarelo */
+.status-concluida { border-left: 5px solid #28a745; } /* Verde */
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container { padding: 1rem; }
+    #task-list .card { margin-bottom: 0.5rem; }
+}
+
+/* Alertas */
+.alert { margin-bottom: 1rem; }

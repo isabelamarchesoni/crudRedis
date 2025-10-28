@@ -1,0 +1,80 @@
+// {% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha To-Do List</title>
+    <!-- Bootstrap CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="{% static 'AppHome/css/styles.css' %}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Minha To-Do List</h1>
+        
+        <!-- Exibir mensagens de erro/sucesso do backend -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <!-- Formulário para adicionar tarefa -->
+        <form method="post" action="{% url 'add_task' %}" class="mb-4">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="text" name="titulo" class="form-control" placeholder="Título *" required>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" name="descricao" class="form-control" placeholder="Descrição">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Adicionar</button>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Lista de tarefas (renderizada via Django) -->
+        <div class="row" id="task-list">
+            {% for task in tasks %}
+                <div class="col-md-4">
+                    <div class="card status-{{ task.status|lower|replace:' ':'-' }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ task.titulo }}</h5>
+                            <p class="card-text">{{ task.descricao|default:'Sem descrição' }}</p>
+                            <p class="text-muted">Criada em: {{ task.data_criacao|date:"d/m/Y" }}</p>
+                            <p>Status: <strong>{{ task.status }}</strong></p>
+                            
+                            <!-- Formulário inline para atualizar status -->
+                            <form method="post" action="{% url 'update_task' task.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <select name="status" class="form-select form-select-sm d-inline w-auto">
+                                    <option value="Pendente" {% if task.status == 'Pendente' %}selected{% endif %}>Pendente</option>
+                                    <option value="Em Progresso" {% if task.status == 'Em Progresso' %}selected{% endif %}>Em Progresso</option>
+                                    <option value="Concluída" {% if task.status == 'Concluída' %}selected{% endif %}>Concluída</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-success">Atualizar Status</button>
+                            </form>
+                            
+                            <!-- Links para editar/deletar (levam a páginas separadas ou forms) -->
+                            <a href="{% url 'edit_task' task.id %}" class="btn btn-sm btn-warning ms-2">Editar</a>
+                            <a href="{% url 'delete_task' task.id %}" class="btn btn-sm btn-danger ms-2" onclick="return confirm('Tem certeza?')">Deletar</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-center">Nenhuma tarefa encontrada. Adicione uma nova!</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Bootstrap JS via CDN (apenas para fechar alertas, sem interações dinâmicas) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
